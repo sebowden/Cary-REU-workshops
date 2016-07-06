@@ -1,0 +1,169 @@
+---
+title: 'Cary REU R/stats workshop #2: data viz'
+author: "SE Bowden"
+date: "June 30, 2016"
+output:
+  slidy_presentation: default
+  beamer_presentation:
+    template: null
+fontsize: 8pt
+---
+#Mini statistics assessment
+
+t-test | ANOVA | linear regression
+
+Which test would you use to answer the following questions, and WHY? What is the null hypothesis (H0) and alternative hypothesis (Ha) for each question?
+
+1. What is the relationship between development time and body size in larval mosquitoes?
+
+2. Are female mosquitoes larger than males?
+
+3. Do three different mosquito species develop at different rates?
+
+***
+
+#Reading and inspecting your data
+
+When your data are cleaned and ready for analysis, the first step is to "read" your data into R. You'll need to set your working directory before you run the next line of code. Go to Session > Set working directory > choose directory. This tells R where to find the files you want to use.
+```{r,tidy=TRUE}
+#read.csv() is a base function in R
+#header is an arguement in the function that tells R if you have column names (TRUE) or not (FALSE)
+mosq_data<-read.csv("workshop2_data.csv",header=TRUE)
+```
+
+***
+
+Now that we've read our data into R, we'll review some common functions that you might use to inspect your data.
+```{r,tidy=TRUE}
+#this prints the first six lines of your dataset to the console
+head(mosq_data)
+```
+
+```{r,tidy=TRUE}
+#this prints the last six lines of your dataset to the console
+tail(mosq_data)
+```
+
+```{r,tidy=TRUE}
+#this prints the dimensions of your dataset in (n.rows, n.columns)
+dim(mosq_data)
+```
+
+***
+
+```{r,tidy=TRUE}
+#this prints all column names in your dataset
+names(mosq_data)
+```
+
+You might start off by looking at a summary of your data.
+```{r,tidy=TRUE}
+summary(mosq_data)
+```
+
+***
+
+The previous function summarizes each column in your dataset. However, we can also access and summarize each column individually.
+```{r,tidy=TRUE,collapse=TRUE}
+#use the $ operator to access a single column
+summary(mosq_data$Abd_length)
+
+#run various summary stats
+length(mosq_data$Abd_length)
+min(mosq_data$Abd_length)
+max(mosq_data$Abd_length)
+range(mosq_data$Abd_length)
+mean(mosq_data$Abd_length)
+sd(mosq_data$Abd_length)
+```
+
+***
+
+#Plotting continuous data
+
+When we want to look at the relationship between two continuous variables, we plot our data using a scatterplot. Here, we'll look at the relationship between mosquito development time and mosquito body size to answer the question: Is there a relationship between body size and development time in larval mosquitoes?
+
+H0: There is no relationship between these variables  
+Ha: There is a (positive OR negative) relationship between these variables.
+
+***
+
+First, let's make a basic scatterplot of these two variables
+```{r,tidy=TRUE}
+plot(mosq_data$Dev_time,mosq_data$Abd_length)
+```
+
+***
+
+There are many ways to customize plots in R. We're going to run through the most basic options. First, let's add informative axis labels.
+```{r,tidy=TRUE}
+plot(mosq_data$Dev_time,mosq_data$Abd_length,xlab="Development time (days)",ylab="Abdominal length (mm)")
+```
+
+***
+
+Next, let's add a title to the plot
+```{r,tidy=TRUE}
+plot(mosq_data$Dev_time,mosq_data$Abd_length,xlab="Development time (days)",ylab="Abdominal length (mm)",main="Relationship between body size and development time")
+```
+
+***
+
+If you find the text difficult to read, you can change the size of the axis labels (*cex.lab*), plot title (*cex.main*), and/or the numbers on each axis (*cex.axis*).
+```{r,tidy=TRUE}
+plot(mosq_data$Dev_time,mosq_data$Abd_length,xlab="Development time (days)",ylab="Abdominal length (mm)",main="Relationship between body size and development time",cex.lab=1.5,cex.main=1.7,cex.axis=1.5)
+```
+
+***
+
+You can also change the color, shape, and/or size of the points in a scatterplot.
+```{r,tidy=TRUE}
+#see ?pch for info on point shapes; see ?colors for info on built-in color names
+
+plot(mosq_data$Dev_time,mosq_data$Abd_length,xlab="Development time (days)",ylab="Abdominal length (mm)",main="Relationship between body size and development time",pch=17,col="red",cex=1.5)
+```
+
+***
+
+Finally, you might want to have more than one plot in a single window. To do this we just have to make a small change to the plot parameters.
+```{r,tidy=TRUE,fig.height=10,collapse=TRUE}
+#specify (n.rows, n.columns)
+par(mfrow=c(2,1)) #two rows, one column
+
+plot(mosq_data$Dev_time,mosq_data$Abd_length,xlab="Development time (days)",ylab="Abdominal length (mm)",main="Relationship between body size and development time",pch=17,col="red",cex=1.5)
+
+plot(mosq_data$Abd_length,mosq_data$Dev_time,xlab="Abdominal length (mm)",ylab="Development time (days)",main="Relationship between body size and development time",pch=17,col="red",cex=1.5)
+```
+
+***
+
+#Statistical tool #1: linear regression
+
+Now that we know how to get our data into R and visualize it, it's time to make inferences from our data. The way we do this with two continuous variables is through linear regression. The output from summary() will print several statistics. When you're working with a single independent variable, you should focus on the multiple R-squared and associated p-value to draw conclusions.
+```{r,tidy=TRUE}
+#formula = dependent.vbl~independent.vbl
+my.model<-lm(Abd_length~Dev_time,data=mosq_data)
+summary(my.model)
+```
+
+In this case, our multiple R-squared is 0.05596. This means that development time (our independent variable) explains roughly 6% of the variation in body size in our dataset. While this isn't a particularly large R-squared, it is statistically significant (p-value < 2.2e-16).
+
+***
+
+Now that we have our statistical results, we can combine them with our figure. We'll add a line over the top of our scatterplot that represents the linear model, as well as add text to the plot to display the R-squared and p-value.
+```{r,tidy=TRUE,collapse=TRUE}
+#don't forget to reset your graphical parameters
+par(mfrow=c(1,1))
+
+plot(mosq_data$Dev_time,mosq_data$Abd_length,xlab="Development time (days)",ylab="Abdominal length (mm)",main="Relationship between body size and development time",pch=17,col="red")
+
+#adds a line over the scatterplot
+abline(my.model)
+
+#adds text at location (x,y) on plot
+text(13,0.17,labels="R-squared = 0.05596")
+text(13,0.16,labels="p-value = 2.2e-16")
+```
+
+What is the take-home conclusion from this analysis?
+
