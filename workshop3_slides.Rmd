@@ -1,0 +1,183 @@
+---
+title: 'Cary REU R/stats workshop #3: t-test/ANOVA'
+author: "SE Bowden"
+date: "July 7, 2016"
+output:
+  slidy_presentation: default
+---
+
+#Mini statistics assessment
+
+**t-test** | ANOVA | ~~linear regression~~
+
+Which test would you use to answer the following questions, and WHY? What is the **null hypothesis (H0)** and **alternative hypothesis (Ha)** for each question?
+
+1. ~~What is the relationship between development time and body size in larval mosquitoes?~~
+
+2. **Are female mosquitoes larger than males?**
+
+3. Do three different mosquito species develop at different rates?
+
+**H0:** *There is no difference in size between females and males.*
+
+**Ha:** *Females are (larger OR smaller) than males.*
+
+***
+#Import data into R
+Just like last week, we first need to read our data into R.  
+Don't forget to set your working directory!
+
+```{r,tidy=TRUE}
+mosq_data<-read.csv("workshop2_data.csv",header=TRUE)
+```
+
+What are some of the summary functions we used last week?
+
+***
+
+#Box-and-whisker plots
+
+A nice way to visualize the spread of your data when you're only working with two groups is `boxplot`, which produces a box-and-whisker plot.
+
+```{r,tidy=TRUE}
+#remember, formulas take the form dependent.vbl~independent.vbl or y~x
+boxplot(Abd_length~Sex,data=mosq_data)
+```
+
+`boxplot` accepts the same graphical arguements that we worked with last week. Recreate this graph, adding X (`xlab`) and Y (`ylab`) axis labels and a title (`main`).
+
+***
+
+#Box-and-whisker plots
+
+```{r,tidy=TRUE}
+boxplot(Abd_length~Sex,data=mosq_data,xlab="Sex",ylab="Abdominal length (mm)",main="Differences in abdominal length between sexes")
+```
+
+***
+
+#Implementing a t-test in R
+
+Now we want to know if there is a statistically significant difference in size between male and female mosquitoes. This is where we have to carefully consider our alternative hypothesis.
+
+**Ha:** *There is a difference in size between females and males.* == **two-sided t-test**
+
+**Ha:** *Females are (larger OR smaller) than males.* == **one-sided t-test**
+
+When in doubt, go with a two-sided t-test because it is more conservative.
+
+```{r,tidy=TRUE}
+#for a two-sided test
+t.test(Abd_length~Sex,data=mosq_data,alternative="two.sided")
+
+#for a one-sided test
+t.test(Abd_length~Sex,data=mosq_data,alternative="greater")
+```
+
+Using the p-value and means printed above, how would you interpret these results?
+
+***
+
+#ANalysis Of VAriance (ANOVA)
+
+~~t-test~~ | **ANOVA** | ~~linear regression~~
+
+Which test would you use to answer the following questions, and WHY? What is the **null hypothesis (H0)** and **alternative hypothesis (Ha)** for each question?
+
+1. ~~What is the relationship between development time and body size in larval mosquitoes?~~
+
+2. ~~Are female mosquitoes larger than males?~~
+
+3. **Do three different mosquito species develop at different rates?**
+
+**H0:** *There is no difference in development time between species.*
+
+**Ha:** *__At least one__ species develops at a different rate than the other species.*
+
+***
+
+#Visualizing differences between more than two groups
+
+Like in the previous example, we can start with a `boxplot`.
+
+```{r,tidy=TRUE}
+boxplot(Dev_time~Species,data=mosq_data,xlab="Species",ylab="Development time (days)",main="Differences in larval development time between species")
+```
+
+However, this plot isn't very informative. Instead, we'll plot the mean development time for each group along with standard deviation.
+
+***
+
+#Visualizing differences between more than two groups
+
+Let's start by calculating means and standard deviation for each species.
+```{r,tidy=TRUE}
+#the portion of code inside the brackets is used to subset our data to include only species "CQ"
+CQ.mean<-mean(mosq_data$Dev_time[mosq_data$Species=="CQ"])
+CQ.sd<-sd(mosq_data$Dev_time[mosq_data$Species=="CQ"])
+
+CQ.mean
+CQ.sd
+```
+
+Now we can repeat this process for the other two species in our dataset.
+```{r,tidy=TRUE}
+#Aedes albopictus (AL)
+AL.mean<-mean(mosq_data$Dev_time[mosq_data$Species=="AL"])
+AL.sd<-sd(mosq_data$Dev_time[mosq_data$Species=="AL"])
+
+AL.mean
+AL.sd
+
+#Aedes aegypti (AG)
+AG.mean<-mean(mosq_data$Dev_time[mosq_data$Species=="AG"])
+AG.sd<-sd(mosq_data$Dev_time[mosq_data$Species=="AG"])
+
+AG.mean
+AG.sd
+```
+
+
+***
+
+#Visualizing differences between more than two groups
+
+Now, let's combine these statistics into a single figure.
+```{r,tidy=TRUE}
+#this installs and loads a package into our workspace. you only need to install a package once, but you'll have to load (i.e., library()) a package each time you restart RStudio.
+
+#install.packages("plotrix")
+library(plotrix)
+
+#x and y specify the location of the points to plot; uiw specifies the length of each side of the standard deviation bars; err specifies that we want to plot standard deviation of the y-variable; add specifies that we want to start a new plot; pch sets the point character to a closed circle; col is a vector making each species a different color; cex increases the size of the points; xaxt removes the x axis
+plotCI(x=c(1:3),y=c(CQ.mean,AL.mean,AG.mean),uiw=c(CQ.sd,AL.sd,AG.sd),err="y",add=FALSE,pch=16,col=c("red","blue","purple"),cex=1.2,xlab=" ",ylab="Development time (days)",main="Differences in larval development time",xaxt="n")
+
+#the first arguement specifies the location of the legend (e.g., "bottomleft","topright"); legend is a vector of labels; col is a vector of colors associated with each label; pch set the point character to a closed circle to match the plotted points; bty specifies that we don't want to draw a box around the legend
+legend("topright",legend=c("CQ","AL","AG"),col=c("red","blue","purple"),pch=16,bty="n")
+```
+
+
+***
+
+#ANOVA
+
+Next, let's run an ANOVA to determine if any of these groups differ significantly from the others.
+```{r,tidy=TRUE}
+#install.packages("car")
+library(car)
+
+Anova(lm(Dev_time~Species,data=mosq_data))
+```
+
+How would you interpret this output?
+
+***
+
+#ANOVA
+
+Now that we know that development time is not the same across all species, we need to figure out which species (one or more) differs from the rest. We do this using post-hoc pairwise t-tests between each pair of species, correcting for the number of tests we perform (i.e., Bonferroni correction)
+```{r,tidy=TRUE}
+pairwise.t.test(mosq_data$Dev_time,mosq_data$Species,p.adj="bonf")
+```
+
+How would you interpret these results?
