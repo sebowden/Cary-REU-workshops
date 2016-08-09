@@ -1,0 +1,141 @@
+---
+title: "Dynamic documents and reproducible research with R Markdown"
+author: "Sarah E. Bowden, Ph.D.  \n bowdens@caryinstitute.org"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: beamer_presentation
+---
+
+#What is reproducible research? 
+
+\begin{center}
+All analyses and graphics from a project \\ can be reproduced by \textbf{anyone} 
+\end{center}
+\vspace{0.5in}
+
+To test your projects for reproducibility (in R):  
+1. Clear your history/workspace.  
+2. Highlight all of your code.  
+3. Hit "Run." \vspace{0.2in}
+
+
+#Why should we strive for reproducible research?
+
+> - Transparency in our research 
+\vspace{0.1in}
+> - Promotes collaboration
+\vspace{0.1in}
+> - Others can easily build off of previous research
+\vspace{0.1in}
+> - Helps out future you!
+
+#What is R Markdown?
+
+\begin{center}
+{\sl"R Markdown is an authoring format that enables easy creation of dynamic documents, presentations, and reports from R."} - RStudio
+
+\end{center}
+
+- combines ("knits" together) markdown syntax (a simple, plain-text markup language) with *chunks* of R code  
+
+![R Markdown flow for document rendering](http://rmarkdown.rstudio.com/images/RMarkdownFlow.png)
+
+#What can R Markdown do?
+
+- PDF, Word, or HTML output for documents/reports
+- PDF and HTML (Slidy or ioslides) output for presentations
+
+![R Markdown output formats](http://rmarkdown.rstudio.com/images/RMarkdownOutputFormats.png)
+
+#Creating and modifying a Rmd document script
+
+To get started, install the `rmarkdown` package. You only need to do this once.
+```{r markdown_install, eval=FALSE}
+install.packages('rmarkdown')
+library(rmarkdown)
+```
+
+Open a new R Markdown script: File > New file > R Markdown...  
+
+Select output format   
+- HTML or Word will work immediately  
+- PDF requires full \TeX\ install  
+Insert title and author(s)
+
+
+#Integrating text and code chunks
+
+- write plain-language description of what your code is doing \vspace{0.2in}
+- write code chunk (offset by sets of 3 backticks) \vspace{0.2in}
+- compile/render ("knit") often to check for errors \vspace{0.2in}
+
+
+#Text markup options for Rmd documents
+
+- `**bold**` or `__bold__` -> **bold**
+- `*italic*` or `_italic_` -> *italic*
+- heading levels
+- ordered (numbered) and unordered lists
+- tables
+- insert links
+- insert images
+- inline code or equations \vspace{0.2in}
+
+- \LaTeX\ markup can also be used within documents and presentations
+- for example, `\vspace{0.2in}` adds 0.2 inches in between this line... \vspace{0.2in}
+
+- and this line
+
+#Code chunk options
+
+\begin{center}
+With the curly braces at the top of each code chunk, \newline 
+e.g., \{r, tidy=TRUE\}, there are a number of options you can specify.
+\end{center}
+
+`echo = FALSE` -> don't print code in the document/presentation  
+`eval = FALSE` -> don't evaluate code or print results  
+`tidy = TRUE` -> reformat code in a tidy way for display  
+`fig.width = 7` -> adjust width of figures (7 is default)  
+`fig.height = 7` -> adjust height of figures (7 is default)  
+\vspace{0.2in}
+...and many more.
+
+#Creating and modifying a Rmd presentation script
+
+Identical to creating a new document script
+
+- select output format
+- insert title, author(s)
+
+Text markup options for Rmd presentations
+
+- does not support tables (yet)
+- `#Header` starts a new slide, where `Header` is the slide title
+- can also delineate between slides using `***` or `---` \vspace{0.2in}
+
+- code chunk options are identical to Rmd documents
+
+#Document and presentation templates
+
+- a few document templates available through RStudio
+- some presentation templates available online \vspace{0.2in}
+- play around with templates to edit some components (e.g., color scheme)
+- design your own template for re-use
+
+#Continuing with R Markdown on your own
+
+- There is a wealth of resources online
+- Google is your friend
+- Check out StackExchange and similar webpages
+- Post questions in online forums
+- New functionality constantly being developed
+\vspace{0.2in}
+
+\begin{center}
+As with most computer programming, there will be a steep learning curve at the beginning. Once you get the hang of things, your work will go faster. It may seem time-consuming at first, but it will save you \textbf{SO. MUCH. TIME.} later.
+\end{center}
+
+\vspace{0.2in}
+\begin{center}
+TL;DR: R Markdown + \LaTeX\ = Awesome Science
+\end{center}
